@@ -32,6 +32,12 @@ let parsingAndFormatting1 = (fn) => {
   })
 }
 
+export let parse = U.parse
+export let format = U.format
+export let resolve = U.resolve
+export let domainToASCII = U.domainToASCII
+export let domainToUnicode = U.domainToUnicode
+
 export let dir = parsing(P.dir)
 export let splitDirs = parsing(P.splitDirs)
 export let base = parsing(P.base)
