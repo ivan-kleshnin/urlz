@@ -1,0 +1,45 @@
+{
+  "name": "urlz",
+  "description": "Functional utils for URLs",
+  "version": "0.0.0",
+  "author": "Ivan Kleshnin <ivan@paqmind.com> (paqmind.com)",
+  "license": "MIT",
+  "bugs": "https://github.com/ivan-kleshnin/urlz/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ivan-kleshnin/urlz"
+  },
+  "keywords": [
+    "url",
+    "path",
+    "query",
+    "functional",
+    "fp"
+  ],
+  "main": "lib/index.js",
+  "dependencies": {
+    "pathz": "^0.8.0"
+  },
+  "peerDependencies": {
+    "@paqmind/ramda": "*"
+  },
+  "devDependencies": {
+    "@paqmind/ramda": "*",
+    "mocha": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "scripts": {
+    "prebuild": "rm -rf lib && mkdir -p lib",
+    "build": "babel src/ -d lib/",
+    "build-watch": "babel --watch src/ -d lib/",
+    "prepare": "npm run build",
+    "test": "mocha tests/ --recursive"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ]
+  }
+}
