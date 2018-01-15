@@ -1,7 +1,7 @@
 # Urlz
 
-Functional toolkit for URLs. Drop-in [NodeJS Url](https://nodejs.org/api/url.html) and
-[NodeJS QueryString](https://nodejs.org/api/url.html) replacement.
+Functional toolkit for URLs. Drop-in [`url`](https://nodejs.org/api/url.html) and
+[`querystring`](https://nodejs.org/api/querystring.html) replacement.
 Originally built for a static site generator where URL transformation is a common task, but use-cases
 are really unlimited.
 
