@@ -2,6 +2,15 @@ import * as R from "@paqmind/ramda"
 import U from "url"
 import P from "pathz/lib/posix"
 
+/**
+ * Notes:
+ *   obj.host has priority over obj.hostname + obj.port and obj.href
+ *   but
+ *   obj.pathname + obj.search have priority over obj.path and obj.href
+ */
+
+R.reduce2 = R.addIndex(R.reduce)
+
 let parsing = (fn) => {
   return (url) => {
     let obj = U.parse(url)
@@ -32,152 +41,271 @@ let parsingAndFormatting1 = (fn) => {
   })
 }
 
-export let parse = U.parse
-export let format = U.format
-export let resolve = U.resolve
-export let domainToASCII = U.domainToASCII
-export let domainToUnicode = U.domainToUnicode
-
-export let dir = parsing(P.dir)
-export let splitDirs = parsing(P.splitDirs)
-export let base = parsing(P.base)
-export let name = parsing(P.name)
-export let ext = parsing(P.ext)
-export let leftDirs = parsing1(P.leftDirs)
-export let rightDirs = parsing1(P.rightDirs)
-export let leftDir = parsing(P.leftDir)
-export let rightDir = parsing(P.rightDir)
-
-export let addLeftDir = parsingAndFormatting1(P.addLeftDir)
-export let addRightDir = parsingAndFormatting1(P.addRightDir)
-export let dropLeftDir = parsingAndFormatting(P.dropLeftDir)
-export let dropRightDir = parsingAndFormatting(P.dropRightDir)
-export let withLeftDir = parsingAndFormatting1(P.withLeftDir)
-export let withRightDir = parsingAndFormatting1(P.withRightDir)
-
-export let withDir = parsingAndFormatting1(P.withDir)
-export let withBase = parsingAndFormatting1(P.withBase)
-export let withName = parsingAndFormatting1(P.withName)
-export let withExt = parsingAndFormatting1(P.withExt)
-export let dropBase = parsingAndFormatting(P.dropBase)
-export let dropExt = parsingAndFormatting(P.dropExt)
-
-export let ensureRoot = (path) => path.startsWith("/") ? path : "/" + path
-
-export let ensureProtocol = (protocol) => protocol.endsWith(":") ? protocol : protocol + ":"
-
-export let ensureQs = (qs) => qs.startsWith("?") ? qs : "?" + qs
-
-export let ensureHash = (hash) => hash.startsWith("#") ? hash : "#" + hash
-
-export let protocol = (url) => {
-  return U.parse(url).protocol
-}
-
-export let auth = (url) => {
-  return U.parse(url).auth
-}
-
-export let host = (url) => {
-  return U.parse(url).host
-}
-
-export let hostname = (url) => {
-  return U.parse(url).hostname
-}
-
-export let port = (url) => {
-  return U.parse(url).port
-}
-
-export let search = (url) => {
-  return U.parse(url).search
-}
-
-export let qs = search
-
-export let query = (url) => {
-  return U.parse(url).query
-}
-
-export let path = (url) => {
-  return U.parse(url).path
-}
-
-export let pathname = (url) => {
-  return U.parse(url).pathname
-}
-
-export let relHref = (url) => {
+let parse = (url) => {
   let obj = U.parse(url)
+  obj.origin = (obj.protocol ? obj.protocol + "//" : "") + obj.host
+  obj.relHref = obj.path + (obj.hash || "")
+  return obj
+}
+let format = U.format
+let resolve = U.resolve
+let domainToASCII = U.domainToASCII
+let domainToUnicode = U.domainToUnicode
+
+let dir = parsing(P.dir)
+let splitDirs = parsing(P.splitDirs)
+let base = parsing(P.base)
+let name = parsing(P.name)
+let ext = parsing(P.ext)
+let leftDirs = parsing1(P.leftDirs)
+let rightDirs = parsing1(P.rightDirs)
+let leftDir = parsing(P.leftDir)
+let rightDir = parsing(P.rightDir)
+
+let addLeftDir = parsingAndFormatting1(P.addLeftDir)
+let addRightDir = parsingAndFormatting1(P.addRightDir)
+let dropLeftDir = parsingAndFormatting(P.dropLeftDir)
+let dropRightDir = parsingAndFormatting(P.dropRightDir)
+let withLeftDir = parsingAndFormatting1(P.withLeftDir)
+let withRightDir = parsingAndFormatting1(P.withRightDir)
+
+let withDir = parsingAndFormatting1(P.withDir)
+let withBase = parsingAndFormatting1(P.withBase)
+let withName = parsingAndFormatting1(P.withName)
+let withExt = parsingAndFormatting1(P.withExt)
+let dropBase = parsingAndFormatting(P.dropBase)
+let dropExt = parsingAndFormatting(P.dropExt)
+
+let ensureRoot = (path) => path.startsWith("/") ? path : "/" + path
+
+let ensureProtocol = (protocol) => protocol.endsWith(":") ? protocol : protocol + ":"
+
+let ensureQs = (qs) => qs.startsWith("?") ? qs : "?" + qs
+
+let ensureHash = (hash) => hash.startsWith("#") ? hash : "#" + hash
+
+let protocol = (url) => {
+  return parse(url).protocol
+}
+
+let auth = (url) => {
+  return parse(url).auth
+}
+
+let host = (url) => {
+  return parse(url).host
+}
+
+let hostname = (url) => {
+  return parse(url).hostname
+}
+
+let port = (url) => {
+  return parse(url).port
+}
+
+let search = (url) => {
+  return parse(url).search
+}
+
+let qs = search
+
+let query = (url) => {
+  return parse(url).query
+}
+
+let path = (url) => {
+  return parse(url).path
+}
+
+let pathname = (url) => {
+  return parse(url).pathname
+}
+
+let relHref = (url) => {
+  let obj = parse(url)
   return obj.path + (obj.hash || "")
 }
 
-export let withProtocol = R.curry((protocol, url) => {
+let withProtocol = R.curry((protocol, url) => {
   // Abs. URL is assumed
-  let obj = U.parse(url)
+  let obj = parse(url)
   obj.protocol = ensureProtocol(protocol)
-  obj.host = obj.host || "localhost:80" // polyfill host
+  obj.hostname = obj.hostname || "localhost" // polyfill hostname
   obj.pathname = ensureRoot(obj.pathname)
-  return U.format(obj)
+  return format(obj)
 })
 
-export let withAuth = R.curry((auth, url) => {
+let withAuth = R.curry((auth, url) => {
   // Abs. URL is assumed
-  let obj = U.parse(url)
+  let obj = parse(url)
   obj.protocol = obj.protocol || "http:" // polyfill protocol
-  obj.host = obj.host || "localhost:80" // polyfill host
+  obj.hostname = obj.hostname || "localhost" // polyfill hostname
   obj.auth = auth
   obj.pathname = ensureRoot(obj.pathname)
-  return U.format(obj)
+  return format(obj)
 })
 
-export let withHost = R.curry((host, url) => {
+let withHost = R.curry((host, url) => {
   // Abs. URL is assumed
-  let obj = U.parse(url)
+  let obj = parse(url)
   obj.protocol = obj.protocol || "http:" // polyfill protocol
   obj.host = host
+  delete obj.hostname // drop hostname
+  delete obj.port     // drop port
   obj.pathname = ensureRoot(obj.pathname)
-  return U.format(obj)
+  return format(obj)
 })
 
-export let withHostname = R.curry((hostname, url) => {
+let withHostname = R.curry((hostname, url) => {
   // Abs. URL is assumed
-  let obj = U.parse(url)
+  let obj = parse(url)
   obj.protocol = obj.protocol || "http:" // polyfill protocol
   obj.hostname = hostname
-  delete obj.host // drop host
-  return U.format(obj)
+  delete obj.host
+  return format(obj)
 })
 
-export let withPort = R.curry((port, url) => {
+let withPort = R.curry((port, url) => {
   // Abs. URL is assumed
-  let obj = U.parse(url)
+  let obj = parse(url)
   obj.protocol = obj.protocol || "http:" // polyfill protocol
   obj.hostname = obj.hostname || "localhost" // polyfill hostname
   obj.port = port
-  delete obj.host // drop host
-  return U.format(obj)
+  delete obj.host
+  return format(obj)
 })
 
-export let withHash = R.curry((hash, url) => {
-  let obj = U.parse(url)
+let withHash = R.curry((hash, url) => {
+  let obj = parse(url)
   obj.hash = ensureHash(hash)
-  return U.format(obj)
+  return format(obj)
 })
 
-export let withQs = R.curry((qs, url) => {
-  let obj = U.parse(url)
+let withQs = R.curry((qs, url) => {
+  let obj = parse(url)
   obj.search = ensureQs(qs)
-  return U.format(obj)
+  delete obj.path
+  return format(obj)
 })
 
-export let withPathname = R.curry((pathname, url) => {
-  let obj = U.parse(url)
+let withPathname = R.curry((pathname, url) => {
+  let obj = parse(url)
   obj.pathname = obj.path.startsWith("/")
     ? ensureRoot(pathname)
     : pathname
   delete obj.path
-  return U.format(obj)
+  return format(obj)
 })
 
+let urlType = (url) => {
+  let obj = parse(url)
+  if (obj.protocol) {
+    return "absolute"
+  } else if (obj.path.startsWith("/")) {
+    return "root-relative"
+  } else {
+    return "relative"
+  }
+}
+
+let isAbsolute = (url) => {
+  return urlType(url) == "absolute"
+}
+
+let isRootRelative = (url) => {
+  return urlType(url) == "root-relative"
+}
+
+let isRelative = (url) => {
+  return urlType(url) != "absolute" // "root-relative" IS relative as well
+}
+
+let join = (...xs) => {
+  return R.reduce2((z, x, i) => {
+    return i > 0
+      ? (x.startsWith("?") || x.startsWith("#")) ? (z + x) : (z + "/" + x)
+      : x
+  }, "", xs)
+}
+
+let normalize = (url) => {
+  let obj = U.parse(url)
+  obj.pathname = P.normalize(obj.pathname)
+  delete obj.path
+  return format(obj)
+}
+
+let relative = R.curry((url1, url2) => {
+  let obj1 = U.parse(url1)
+  let obj2 = U.parse(url2)
+  if (obj1.host == obj2.host) {
+    return P.relative(obj1.pathname, obj2.pathname)
+  } else {
+    return null
+  }
+})
+
+export default {
+  parse,
+  format,
+  resolve,
+  domainToASCII,
+  domainToUnicode,
+
+  dir,
+  splitDirs,
+  base,
+  name,
+  ext,
+  leftDirs,
+  rightDirs,
+  leftDir,
+  rightDir,
+
+  addLeftDir,
+  addRightDir,
+  dropLeftDir,
+  dropRightDir,
+  withLeftDir,
+  withRightDir,
+
+  withDir,
+  withBase,
+  withName,
+  withExt,
+  dropBase,
+  dropExt,
+  ensureRoot,
+  ensureProtocol,
+  ensureQs,
+  ensureHash,
+  auth,
+  protocol,
+  host,
+  hostname,
+  port,
+  search,
+  qs,
+  query,
+  path,
+  pathname,
+  relHref,
+  withProtocol,
+  withAuth,
+  withHost,
+  withHostname,
+  withPort,
+  withHash,
+  withQs,
+  withPathname,
+
+  urlType,
+  isAbsolute,
+  isRootRelative,
+  isRelative,
+
+  join,
+  normalize,
+  relative
+}

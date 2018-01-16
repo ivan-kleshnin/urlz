@@ -1,5 +1,5 @@
 let eq = require("assert").deepStrictEqual
-let U = require("../lib")
+let U = require("../lib").default
 
 describe("index.js", () => {
   describe("dir()", () => {
@@ -578,7 +578,47 @@ describe("index.js", () => {
     })
   })
 
-  // == experimental section ==
+  describe("parse()", () => {
+    it("returns relHref for an absolute url", () => {
+      eq(U.parse("http://demo.com/foo/bar?x=X#foo").relHref, "/foo/bar?x=X#foo")
+      eq(U.parse("http://demo.com/foo/bar?x=X").relHref, "/foo/bar?x=X")
+      eq(U.parse("http://demo.com/foo/bar#foo").relHref, "/foo/bar#foo")
+    })
+
+    it("returns relHref for a root-relative url", () => {
+      eq(U.parse("/foo/bar?x=X#foo").relHref, "/foo/bar?x=X#foo")
+      eq(U.parse("/foo/bar?x=X").relHref, "/foo/bar?x=X")
+      eq(U.parse("/foo/bar#foo").relHref, "/foo/bar#foo")
+    })
+
+    it("returns relHref for a relative url", () => {
+      eq(U.parse("foo/bar?x=X#foo").relHref, "foo/bar?x=X#foo")
+      eq(U.parse("foo/bar?x=X").relHref, "foo/bar?x=X")
+      eq(U.parse("foo/bar#foo").relHref, "foo/bar#foo")
+    })
+  })
+
+  describe("format(parse(...))", () => {
+    it("U.format accepts U.parse result for an absolute url", () => {
+      eq(U.format(U.parse("http://demo.com/foo/bar?x=X#foo")), "http://demo.com/foo/bar?x=X#foo")
+      eq(U.format(U.parse("http://demo.com/foo/bar?x=X")), "http://demo.com/foo/bar?x=X")
+      eq(U.format(U.parse("http://demo.com/foo/bar?#foo")), "http://demo.com/foo/bar?#foo")
+      eq(U.format(U.parse("http://demo.com/foo/bar")), "http://demo.com/foo/bar")
+    })
+
+    it("U.format accepts U.parse result for a root-relative url", () => {
+      eq(U.format(U.parse("/foo/bar?x=X#foo")), "/foo/bar?x=X#foo")
+      eq(U.format(U.parse("/foo/bar?x=X")), "/foo/bar?x=X")
+      eq(U.format(U.parse("/foo/bar#foo")), "/foo/bar#foo")
+    })
+
+   it("U.format accepts U.parse result for a relative url", () => {
+      eq(U.format(U.parse("foo/bar?x=X#foo")), "foo/bar?x=X#foo")
+      eq(U.format(U.parse("foo/bar?x=X")), "foo/bar?x=X")
+      eq(U.format(U.parse("foo/bar#foo")), "foo/bar#foo")
+    })
+  })
+
   describe("relHref()", () => {
     it("gets the relative href for an absolute url", () => {
       eq(U.relHref("http://demo.com/foo/bar?x=X#foo"), "/foo/bar?x=X#foo")
@@ -605,11 +645,11 @@ describe("index.js", () => {
     })
 
     it("sets the protocol for a root-relative url", () => {
-      eq(U.withProtocol("https", "/foo/bar"), "https://localhost:80/foo/bar")
+      eq(U.withProtocol("https", "/foo/bar"), "https://localhost/foo/bar")
     })
 
     it("sets the protocol for a relative url", () => {
-      eq(U.withProtocol("https", "foo/bar"), "https://localhost:80/foo/bar")
+      eq(U.withProtocol("https", "foo/bar"), "https://localhost/foo/bar")
     })
   })
 
@@ -686,7 +726,7 @@ describe("index.js", () => {
     })
   })
 
-  describe("withPathname()", () => {
+  describe("withPathname()", (  ) => {
     it("sets the pathname for an absolute url", () => {
       eq(U.withPathname("foo/bar", "http://demo.com/foo/baz"), "http://demo.com/foo/bar")
       eq(U.withPathname("foo/bar", "http://demo.com/"), "http://demo.com/foo/bar")
@@ -698,6 +738,64 @@ describe("index.js", () => {
 
     it("sets the pathname for a relative url", () => {
       eq(U.withPathname("foo/bar", "foo/baz"), "foo/bar")
+    })
+  })
+
+  describe("join()", () => {
+    it("joins path fragments for an absolute url", () => {
+      eq(U.join("http://demo.com", "foo", "bar"), "http://demo.com/foo/bar")
+      eq(U.join("http://demo.com", "foo", "?x=X"), "http://demo.com/foo?x=X")
+      eq(U.join("http://demo.com", "foo/", "?x=X"), "http://demo.com/foo/?x=X")
+      eq(U.join("http://demo.com", "foo", "#bar"), "http://demo.com/foo#bar")
+      eq(U.join("http://demo.com", "foo/", "#bar"), "http://demo.com/foo/#bar")
+      eq(U.join("http://demo.com", "foo", "?x=X", "#foo"), "http://demo.com/foo?x=X#foo")
+      eq(U.join("http://demo.com", "foo/", "?x=X", "#foo"), "http://demo.com/foo/?x=X#foo")
+    })
+
+    it("joins path fragments for a root-relative url", () => {
+      eq(U.join("/foo", "bar"), "/foo/bar")
+    })
+
+    it("joins path fragments for a relative url", () => {
+      eq(U.join("foo", "bar"), "foo/bar")
+    })
+  })
+
+  describe("normalize()", () => {
+    it("normalizes paths for absolute urls", () => {
+      eq(U.normalize("http://demo.com/foo/../"), "http://demo.com/")
+      eq(U.normalize("http://demo.com/foo/./"), "http://demo.com/foo/")
+      eq(U.normalize("http://demo.com/../foo/"), "http://demo.com/foo/")
+      eq(U.normalize("http://demo.com/./foo/"), "http://demo.com/foo/")
+    })
+
+    it("normalizes paths for root-relative urls", () => {
+      eq(U.normalize("/foo/../"), "/")
+      eq(U.normalize("/foo/./"), "/foo/")
+      eq(U.normalize("/../foo/"), "/foo/") // drops ..
+      eq(U.normalize("/./foo/"), "/foo/")
+    })
+
+    it("normalizes paths for relative urls", () => {
+      eq(U.normalize("foo/../"), "./")
+      eq(U.normalize("foo/./"), "foo/")
+      eq(U.normalize("../foo/"), "../foo/") // preserves ..
+      eq(U.normalize("./foo/"), "foo/")
+    })
+  })
+
+  describe("relative()", () => {
+    it("gets relative path between two absolute urls", () => {
+      eq(U.relative("http://demo.com/foo/bar/baz", "http://demo.com/foo/qux/spam"), "../../qux/spam")
+      eq(U.relative("http://demo.com/foo/bar/baz", "http://demo2.com/foo/qux/spam"), null)
+    })
+
+    it("gets relative path between two root-relative urls", () => {
+      eq(U.relative("/foo/bar/baz", "/foo/qux/spam"), "../../qux/spam")
+    })
+
+    it("gets relative path between two relative urls", () => {
+      eq(U.relative("foo/bar/baz", "foo/qux/spam"), "../../qux/spam")
     })
   })
 })

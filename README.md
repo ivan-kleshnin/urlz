@@ -2,7 +2,7 @@
 
 Functional toolkit for URLs. Drop-in [`url`](https://nodejs.org/api/url.html) and
 [`querystring`](https://nodejs.org/api/querystring.html) replacement.
-Originally built for a static site generator where URL transformation is a common task, but use-cases
+Originally built for a static site generator where URL transformations are common, but use-cases
 are really unlimited.
 
 ### Features
@@ -36,9 +36,11 @@ let UU = require("url")
 
 ## Motivation
 
-#### 1. Original `format` / `parse` provide limited, low-level functionality
+#### 1. Original `format` / `parse` provide limited, low-level, mutable API
 
-#### 2. Urlz respects "relativeness" and "absoluteness" of urlz
+#### 2. `urlz` preserves trailing slash or its absence
+
+#### 3. `urlz` respects "relativeness" and "absoluteness" of urls
 
 ```js
 console.log(U.addLeftDir("bar", "/foo.txt"))  // "/bar/foo.txt" (+)
@@ -48,7 +50,7 @@ console.log(U.addRightDir("bar", "/foo.txt")) // "/bar/foo.txt" (+)
 console.log(UU.join("/foo.txt", "bar"))       // "/foo.txt/bar" (-) naive
 ```
 
-#### 3. Urlz is composition friendly
+#### 4. `urlz` is composition friendly
 
 ```js
 let R = require("ramda")
@@ -64,7 +66,7 @@ console.log(dst) // "public/team/about/index.html"
                  // corresponding to "/team/about/" URL
 ```
 
-#### 4. Urlz is like CRUD for path fragments
+#### 5. `urlz` is like CRUD for path fragments
 
 ```js
 // GET
@@ -82,7 +84,7 @@ console.log(U.dropRightDir("/foo/bar/baz.txt")) // "/foo/baz.txt"
 // ...
 ```
 
-#### 5. Urlz provides extra utils
+#### 6. `urlz` provides extra utils
 
 *TODO: describe*
 
