@@ -16,9 +16,9 @@
     "functional",
     "fp"
   ],
-  "main": "lib/index.js",
+  "main": "index.js",
   "dependencies": {
-    "pathz": "^0.8.0"
+    "pathz": "^0.9.0"
   },
   "peerDependencies": {
     "@paqmind/ramda": "*"
@@ -31,9 +31,9 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "prebuild": "rm -rf lib && mkdir -p lib",
-    "build": "babel src/ -d lib/",
-    "build-watch": "babel --watch src/ -d lib/",
+    "prebuild": "rm -f *.js",
+    "build": "babel src/ -d ./",
+    "build-watch": "babel --watch src/ -d ./",
     "prepare": "npm run build",
     "test": "mocha tests/ --recursive"
   },

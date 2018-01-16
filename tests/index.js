@@ -1,5 +1,5 @@
 let eq = require("assert").deepStrictEqual
-let U = require("../lib").default
+let U = require("../").default
 
 describe("index.js", () => {
   describe("dir()", () => {

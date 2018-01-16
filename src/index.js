@@ -1,6 +1,6 @@
 import * as R from "@paqmind/ramda"
 import U from "url"
-import P from "pathz/lib/posix"
+import P from "pathz/browser"
 
 /**
  * Notes:
