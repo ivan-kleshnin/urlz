@@ -80,9 +80,13 @@ let ensureRoot = (path) => path.startsWith("/") ? path : "/" + path
 
 let ensureProtocol = (protocol) => protocol.endsWith(":") ? protocol : protocol + ":"
 
-let ensureQs = (qs) => qs.startsWith("?") ? qs : "?" + qs
+let ensureQs = (qs) => qs
+  ? qs.startsWith("?") ? qs : "?" + qs
+  : ""
 
-let ensureHash = (hash) => hash.startsWith("#") ? hash : "#" + hash
+let ensureHash = (hash) => hash
+  ? hash.startsWith("#") ? hash : "#" + hash
+  : ""
 
 let protocol = (url) => {
   return parse(url).protocol
@@ -176,16 +180,16 @@ let withPort = R.curry((port, url) => {
   return format(obj)
 })
 
-let withHash = R.curry((hash, url) => {
-  let obj = parse(url)
-  obj.hash = ensureHash(hash)
-  return format(obj)
-})
-
 let withQs = R.curry((qs, url) => {
   let obj = parse(url)
   obj.search = ensureQs(qs)
   delete obj.path
+  return format(obj)
+})
+
+let withHash = R.curry((hash, url) => {
+  let obj = parse(url)
+  obj.hash = ensureHash(hash)
   return format(obj)
 })
 

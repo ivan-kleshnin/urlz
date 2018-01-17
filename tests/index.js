@@ -696,18 +696,18 @@ describe("index.js", () => {
     })
   })
 
-  describe("withHash()", () => {
-    it("sets the hash for an absolute url with", () => {
-      eq(U.withHash("xxx", "http://demo.com/foo/bar#yyy"), "http://demo.com/foo/bar#xxx")
-      eq(U.withHash("xxx", "http://demo.com/foo/bar"), "http://demo.com/foo/bar#xxx")
+  describe("withPathname()", (  ) => {
+    it("sets the pathname for an absolute url", () => {
+      eq(U.withPathname("foo/bar", "http://demo.com/foo/baz"), "http://demo.com/foo/bar")
+      eq(U.withPathname("foo/bar", "http://demo.com/"), "http://demo.com/foo/bar")
     })
 
-    it("sets the hash for a root-relative url", () => {
-      eq(U.withHash("xxx", "/foo/bar"), "/foo/bar#xxx")
+    it("sets the pathname for a root-relative url", () => {
+      eq(U.withPathname("foo/bar", "/foo/baz"), "/foo/bar")
     })
 
-    it("sets the hash for a relative url", () => {
-      eq(U.withHash("xxx", "foo/bar"), "foo/bar#xxx")
+    it("sets the pathname for a relative url", () => {
+      eq(U.withPathname("foo/bar", "foo/baz"), "foo/bar")
     })
   })
 
@@ -724,20 +724,32 @@ describe("index.js", () => {
     it("sets the qs for a relative url", () => {
       eq(U.withQs("x=X", "foo/bar"), "foo/bar?x=X")
     })
+
+    it("handles empty qs correctly", () => {
+      eq(U.withQs("", "foo/bar"), "foo/bar")
+      eq(U.withQs("", "foo/bar?x=X"), "foo/bar")
+      eq(U.withQs("", "foo/bar?x=X#baz"), "foo/bar#baz")
+    })
   })
 
-  describe("withPathname()", (  ) => {
-    it("sets the pathname for an absolute url", () => {
-      eq(U.withPathname("foo/bar", "http://demo.com/foo/baz"), "http://demo.com/foo/bar")
-      eq(U.withPathname("foo/bar", "http://demo.com/"), "http://demo.com/foo/bar")
+  describe("withHash()", () => {
+    it("sets the hash for an absolute url with", () => {
+      eq(U.withHash("xxx", "http://demo.com/foo/bar#yyy"), "http://demo.com/foo/bar#xxx")
+      eq(U.withHash("xxx", "http://demo.com/foo/bar"), "http://demo.com/foo/bar#xxx")
     })
 
-    it("sets the pathname for a root-relative url", () => {
-      eq(U.withPathname("foo/bar", "/foo/baz"), "/foo/bar")
+    it("sets the hash for a root-relative url", () => {
+      eq(U.withHash("xxx", "/foo/bar"), "/foo/bar#xxx")
     })
 
-    it("sets the pathname for a relative url", () => {
-      eq(U.withPathname("foo/bar", "foo/baz"), "foo/bar")
+    it("sets the hash for a relative url", () => {
+      eq(U.withHash("xxx", "foo/bar"), "foo/bar#xxx")
+    })
+
+    it("handles empty hash correctly", () => {
+      eq(U.withHash("", "foo/bar"), "foo/bar")
+      eq(U.withHash("", "foo/bar#baz"), "foo/bar")
+      eq(U.withHash("", "foo/bar?x=X#baz"), "foo/bar?x=X")
     })
   })
 
