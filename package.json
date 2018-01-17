@@ -1,7 +1,7 @@
 {
   "name": "urlz",
   "description": "Functional utils for URLs",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "author": "Ivan Kleshnin <ivan@paqmind.com> (paqmind.com)",
   "license": "MIT",
   "bugs": "https://github.com/ivan-kleshnin/urlz/issues",
