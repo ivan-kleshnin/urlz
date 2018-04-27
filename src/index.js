@@ -213,7 +213,7 @@ let withQuery = R.curry((query, url) => {
   let obj = U.parse(url)
   obj.search = R.pipe(
     R.merge(QS.parse(obj.query)),
-    R.filter(Boolean),
+    R.filter(R.notNil),
     QS.stringify,
     ensureQs
   )(query)
