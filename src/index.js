@@ -1,5 +1,6 @@
 import * as R from "@paqmind/ramda"
 import U from "url"
+import QS from "querystring"
 import P from "pathz/browser"
 
 /**
@@ -41,39 +42,62 @@ let parsingAndFormatting1 = (fn) => {
   })
 }
 
+// API =============================================================================================
 let parse = (url) => {
   let obj = U.parse(url)
   obj.origin = (obj.protocol ? obj.protocol + "//" : "") + obj.host
   obj.relHref = obj.path + (obj.hash || "")
   return obj
 }
+
 let format = U.format
+
 let resolve = U.resolve
+
 let domainToASCII = U.domainToASCII
+
 let domainToUnicode = U.domainToUnicode
 
 let dir = parsing(P.dir)
+
 let splitDirs = parsing(P.splitDirs)
+
 let base = parsing(P.base)
+
 let name = parsing(P.name)
+
 let ext = parsing(P.ext)
+
 let leftDirs = parsing1(P.leftDirs)
+
 let rightDirs = parsing1(P.rightDirs)
+
 let leftDir = parsing(P.leftDir)
+
 let rightDir = parsing(P.rightDir)
 
 let addLeftDir = parsingAndFormatting1(P.addLeftDir)
+
 let addRightDir = parsingAndFormatting1(P.addRightDir)
+
 let dropLeftDir = parsingAndFormatting(P.dropLeftDir)
+
 let dropRightDir = parsingAndFormatting(P.dropRightDir)
+
 let withLeftDir = parsingAndFormatting1(P.withLeftDir)
+
 let withRightDir = parsingAndFormatting1(P.withRightDir)
 
 let withDir = parsingAndFormatting1(P.withDir)
+
 let withBase = parsingAndFormatting1(P.withBase)
+
 let withName = parsingAndFormatting1(P.withName)
+
 let withExt = parsingAndFormatting1(P.withExt)
+
 let dropBase = parsingAndFormatting(P.dropBase)
+
 let dropExt = parsingAndFormatting(P.dropExt)
 
 let ensureRoot = (path) => path.startsWith("/") ? path : "/" + path
@@ -111,8 +135,6 @@ let port = (url) => {
 let search = (url) => {
   return parse(url).search
 }
-
-let qs = search
 
 let query = (url) => {
   return parse(url).query
@@ -183,6 +205,18 @@ let withPort = R.curry((port, url) => {
 let withQs = R.curry((qs, url) => {
   let obj = parse(url)
   obj.search = ensureQs(qs)
+  delete obj.path
+  return format(obj)
+})
+
+let withQuery = R.curry((query, url) => {
+  let obj = U.parse(url)
+  obj.search = R.pipe(
+    R.merge(QS.parse(obj.query)),
+    R.filter(Boolean),
+    QS.stringify,
+    ensureQs
+  )(query)
   delete obj.path
   return format(obj)
 })
@@ -290,7 +324,6 @@ export default {
   hostname,
   port,
   search,
-  qs,
   query,
   path,
   pathname,
@@ -302,6 +335,7 @@ export default {
   withPort,
   withHash,
   withQs,
+  withQuery,
   withPathname,
 
   urlType,
