@@ -1,5 +1,5 @@
-let eq = require("assert").deepStrictEqual
-let U = require("../").default
+import {deepStrictEqual as eq} from "assert"
+import U from "../src"
 
 describe("index.js", () => {
   describe("dir()", () => {
