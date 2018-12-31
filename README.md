@@ -30,7 +30,7 @@ $ npm install urlz
 let U = require("urlz")
 
 // The following snippets also use shortcuts for:
-let R = require("ramda")
+let R = require("ramdax")
 let UU = require("url")
 ```
 
@@ -73,7 +73,7 @@ console.log(UU.join("/foo.txt", "bar"))       // "/foo.txt/bar" (-) naive
 #### 4. `urlz` is composition friendly
 
 ```js
-let R = require("ramda")
+let R = require("ramdax")
 
 let src = "content/team/about.md"
 let dst = R.pipe(

@@ -1,7 +1,7 @@
-import * as R from "@paqmind/ramda"
+import * as R from "@paqmind/ramdax"
 import U from "url"
 import QS from "querystring"
-import P from "pathz/browser"
+import P from "pathz/lib/browser"
 
 /**
  * Notes:
