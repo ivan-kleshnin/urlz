@@ -850,4 +850,23 @@ describe("index.js", () => {
       eq(U.relative("foo/bar/baz", "foo/qux/spam"), "../../qux/spam")
     })
   })
+
+  describe("equals()", () => {
+    it("returns true for two absolute urls", () => {
+      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar/baz"), true)
+      eq(U.equals("http://demo.com/foo/bar/baz", "https://demo.com/foo/bar/baz"), true)
+      eq(U.equals("http://demo.com/foo/bar/baz", "http://user@demo.com/foo/bar/baz"), true)
+      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar/baz#123"), true)
+    })
+
+    it("returns true for two root-relative urls", () => {
+      eq(U.equals("/foo/bar/baz", "/foo/bar/baz"), true)
+      eq(U.equals("/foo/bar/baz", "/foo/bar/baz#123"), true)
+    })
+
+    it("returns true for two relative urls", () => {
+      eq(U.equals("foo/bar/baz", "foo/bar/baz"), true)
+      eq(U.equals("foo/bar/baz", "foo/bar/baz#123"), true)
+    })
+  })
 })
