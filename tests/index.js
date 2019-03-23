@@ -852,21 +852,37 @@ describe("index.js", () => {
   })
 
   describe("equals()", () => {
-    it("returns true for two absolute urls", () => {
+    it("returns true for two same absolute urls", () => {
       eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar/baz"), true)
       eq(U.equals("http://demo.com/foo/bar/baz", "https://demo.com/foo/bar/baz"), true)
       eq(U.equals("http://demo.com/foo/bar/baz", "http://user@demo.com/foo/bar/baz"), true)
       eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar/baz#123"), true)
     })
 
-    it("returns true for two root-relative urls", () => {
+    it("returns true for two same root-relative urls", () => {
       eq(U.equals("/foo/bar/baz", "/foo/bar/baz"), true)
       eq(U.equals("/foo/bar/baz", "/foo/bar/baz#123"), true)
     })
 
-    it("returns true for two relative urls", () => {
+    it("returns true for two same relative urls", () => {
       eq(U.equals("foo/bar/baz", "foo/bar/baz"), true)
       eq(U.equals("foo/bar/baz", "foo/bar/baz#123"), true)
+    })
+
+    it("returns false for two different absolute urls", () => {
+      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar"), false)
+      eq(U.equals("http://demo.com/foo/bar/baz", "http://wwww.demo.com/foo/bar/baz"), false)
+      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/bar/foo/baz"), false)
+    })
+
+    it("returns false for two different root-relative urls", () => {
+      eq(U.equals("/foo/bar/baz", "/foo/bar"), false)
+      eq(U.equals("/foo/bar/baz", "/bar/foo/baz"), false)
+    })
+
+    it("returns false for two different relative urls", () => {
+      eq(U.equals("foo/bar/baz", "foo/bar"), false)
+      eq(U.equals("foo/bar/baz", "bar/foo/baz#123"), false)
     })
   })
 })
