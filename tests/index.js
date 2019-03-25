@@ -852,37 +852,40 @@ describe("index.js", () => {
   })
 
   describe("equals()", () => {
-    it("returns true for two same absolute urls", () => {
-      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar/baz"), true)
-      eq(U.equals("http://demo.com/foo/bar/baz", "https://demo.com/foo/bar/baz"), true)
-      eq(U.equals("http://demo.com/foo/bar/baz", "http://user@demo.com/foo/bar/baz"), true)
-      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar/baz#123"), true)
+    it("compares absolute urls", () => {
+      eq(U.equals("http://demo.com/foo", "http://demo.com/foo"), true)
+      eq(U.equals("http://demo.com/foo", "http://demo.com/bar"), false)
     })
 
-    it("returns true for two same root-relative urls", () => {
-      eq(U.equals("/foo/bar/baz", "/foo/bar/baz"), true)
-      eq(U.equals("/foo/bar/baz", "/foo/bar/baz#123"), true)
+    it("compares root-relative urls", () => {
+      eq(U.equals("/foo", "/foo"), true)
+      eq(U.equals("/foo", "/bar"), false)
     })
 
-    it("returns true for two same relative urls", () => {
-      eq(U.equals("foo/bar/baz", "foo/bar/baz"), true)
-      eq(U.equals("foo/bar/baz", "foo/bar/baz#123"), true)
+    it("compares relative urls", () => {
+      eq(U.equals("foo", "foo"), true)
+      eq(U.equals("foo", "bar"), false)
     })
 
-    it("returns false for two different absolute urls", () => {
-      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/foo/bar"), false)
-      eq(U.equals("http://demo.com/foo/bar/baz", "http://wwww.demo.com/foo/bar/baz"), false)
-      eq(U.equals("http://demo.com/foo/bar/baz", "http://demo.com/bar/foo/baz"), false)
+    it("considers querystring in comparison", () => {
+      eq(U.equals("/foo?x=1", "/foo?x=1"), true)
+      eq(U.equals("/foo?x=1", "/foo?x=2"), false)
+
+      eq(U.equals("bar?y=1", "bar?y=1"), true)
+      eq(U.equals("bar?y=1", "bar?y=2"), false)
     })
 
-    it("returns false for two different root-relative urls", () => {
-      eq(U.equals("/foo/bar/baz", "/foo/bar"), false)
-      eq(U.equals("/foo/bar/baz", "/bar/foo/baz"), false)
+    it("ignores hashes in comparison", () => {
+      eq(U.equals("/foo#x=1", "/foo#x=1"), true)
+      eq(U.equals("/foo#x=1", "/foo#x=2"), true)
+
+      eq(U.equals("bar#y=1", "bar#y=1"), true)
+      eq(U.equals("bar#y=1", "bar#y=2"), true)
     })
 
-    it("returns false for two different relative urls", () => {
-      eq(U.equals("foo/bar/baz", "foo/bar"), false)
-      eq(U.equals("foo/bar/baz", "bar/foo/baz#123"), false)
+    it("ignores credentials in comparison", () => {
+      eq(U.equals("http://user1:pass1@demo.com/foo", "http://user1:pass1@demo.com/foo"), true)
+      eq(U.equals("http://user1:pass1@demo.com/foo", "http://user2:pass2@demo.com/foo"), true)
     })
   })
 })
