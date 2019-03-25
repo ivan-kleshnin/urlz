@@ -284,6 +284,17 @@ let relative = R.curry((url1, url2) => {
   }
 })
 
+let equals = (url1, url2) => {
+  let u1 = U.parse(url1)
+  let u2 = U.parse(url2)
+  let q1 = QS.parse(u1.query)
+  let q2 = QS.parse(u2.query)
+  return u1.hostname == u2.hostname
+    && (u1.port || 80) == (u2.port || 80)
+    && u1.pathname == u2.pathname
+    && R.equals(q1, q2)
+}
+
 export default {
   parse,
   format,
@@ -345,5 +356,6 @@ export default {
 
   join,
   normalize,
-  relative
+  relative,
+  equals
 }
